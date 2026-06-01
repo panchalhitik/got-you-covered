@@ -95,12 +95,39 @@ export default function Profile({
                 }}
               />
               {value.referenceLetter && (
-                <textarea
-                  className="textarea"
-                  rows={6}
-                  value={value.referenceLetter}
-                  onChange={(e) => update("referenceLetter", e.target.value)}
-                />
+                <>
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-xs text-muted truncate">
+                      {value.referenceFileName || "Reference letter"} ·{" "}
+                      {value.referenceLetter.trim().split(/\s+/).length} words
+                    </span>
+                    <button
+                      type="button"
+                      className="btn-ghost text-xs"
+                      onClick={() => {
+                        if (
+                          window.confirm(
+                            "Remove the reference cover letter? The text will be deleted from this browser.",
+                          )
+                        ) {
+                          onChange({
+                            ...value,
+                            referenceLetter: "",
+                            referenceFileName: "",
+                          });
+                        }
+                      }}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                  <textarea
+                    className="textarea"
+                    rows={6}
+                    value={value.referenceLetter}
+                    onChange={(e) => update("referenceLetter", e.target.value)}
+                  />
+                </>
               )}
             </div>
           )}

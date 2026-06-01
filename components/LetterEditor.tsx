@@ -120,7 +120,7 @@ export default function LetterEditor({
       ) : (
         <>
           <textarea
-            className="textarea !font-serif !text-[15px] !leading-7 min-h-[420px] whitespace-pre-wrap"
+            className="textarea !font-serif !text-[15px] !leading-7 min-h-[640px] lg:min-h-[80vh] resize-y whitespace-pre-wrap"
             value={letter}
             onChange={(e) => setLetter(e.target.value)}
             placeholder="Your cover letter will stream in here..."
