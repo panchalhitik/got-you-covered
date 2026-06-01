@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm --version)",
+      "Bash(npm install *)",
+      "Bash(npx tsc *)",
+      "Bash(npm run *)",
+      "Bash(curl -s -o /tmp/page.html -w \"HTTP %{http_code}\\\\n\" http://localhost:3000/)",
+      "Read(//tmp/**)",
+      "Bash(curl -s -X POST http://localhost:3000/api/generate -H \"content-type: application/json\" -d \"{\\\\\"resume\\\\\":\\\\\"test\\\\\",\\\\\"jobDescription\\\\\":\\\\\"test\\\\\"}\")",
+      "Bash(powershell -Command \"Get-Process -Name node -ErrorAction SilentlyContinue | Stop-Process -Force\")",
+      "Bash(curl -s -X POST http://localhost:3000/api/generate -H \"content-type: application/json\" -d \"{\\\\\"resume\\\\\":\\\\\"test resume\\\\\",\\\\\"jobDescription\\\\\":\\\\\"test job\\\\\"}\" -o /tmp/gen.out -w \"HTTP %{http_code}\\\\n\")",
+      "Bash(curl -s http://localhost:3000/api/debug)",
+      "Bash(unset ANTHROPIC_API_KEY ANTHROPIC_BASE_URL)",
+      "Bash(curl -s -X POST http://localhost:3000/api/generate -H \"content-type: application/json\" -d \"{\\\\\"resume\\\\\":\\\\\"Jane Doe. 5 years Python and ML engineering at Acme. Built a fraud-detection pipeline that cut false positives 40%. BS CS.\\\\\",\\\\\"jobDescription\\\\\":\\\\\"Senior ML Engineer at FinTech Co. Looking for Python, fraud detection experience, ability to ship.\\\\\",\\\\\"company\\\\\":\\\\\"FinTech Co\\\\\",\\\\\"role\\\\\":\\\\\"Senior ML Engineer\\\\\",\\\\\"tone\\\\\":\\\\\"conversational\\\\\",\\\\\"length\\\\\":\\\\\"concise\\\\\"}\" --max-time 60 -o /tmp/letter.txt -w \"HTTP %{http_code}\\\\n\")"
+    ]
+  }
+}
