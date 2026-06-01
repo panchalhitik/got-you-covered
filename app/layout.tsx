@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <footer className="max-w-5xl mx-auto px-6 py-8 text-xs text-muted">
           Privacy: resumes, instructions, and generated letters are stored only in this browser&apos;s localStorage. The Anthropic API is called server-side from this app; your API key never reaches the browser.
         </footer>
+        <Analytics />
       </body>
     </html>
   );
