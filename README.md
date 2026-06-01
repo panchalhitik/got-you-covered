@@ -1,42 +1,57 @@
 # Got you CoVered
 
-Generate tailored cover letters from your resume + a target job description, powered by the Anthropic API.
+Generate tailored, one-page cover letters from your resume and a target job description, powered by Claude.
 
-- **Stack:** Next.js (App Router) + TypeScript + Tailwind. API routes keep your `ANTHROPIC_API_KEY` server-side.
-- **Privacy:** resumes, instructions, and generated letters are stored only in your browser's `localStorage`. Nothing is persisted on a server.
+**Live app: https://got-you-covered-cv.vercel.app/**
 
-## Setup
+## What it does
+
+- Reads your resume (PDF or `.docx`) and turns it into editable plain text.
+- Accepts a job description as pasted text or a URL — for URLs, the page is fetched server-side and the main content is extracted.
+- Auto-detects company and role from the job description.
+- Writes a tailored cover letter with Claude, streaming the output as it generates.
+- Supports a built-in default prompt or your own always-applied instructions, plus an optional reference cover letter to emulate your voice and layout.
+- Exports to `.docx` and `.pdf` with proper formatting — bold runs for headers / salutations / sign-offs, real horizontal rules, 1" margins, 11pt body.
+- Tone (formal / conversational / enthusiastic) and length (concise / standard / detailed) selectors.
+- Keeps a local history of your last 50 letters so you can reload them later.
+
+## How to use it
+
+1. **Profile** — upload your resume. Optionally add always-applied instructions (tone, things to emphasize, must-avoid phrases) and an optional reference cover letter for style. If you leave instructions blank, a built-in default prompt produces a clean one-page business letter.
+2. **The job** — paste the job description, or give a URL and click *Fetch text*. Sites like LinkedIn / Indeed / Glassdoor block scrapers; paste the text for those. Company and role auto-fill from the description.
+3. **Generate** — the letter streams into an editable view. Edit anything inline.
+4. **Export** — Copy to clipboard (plain text), Download `.docx`, or Download `.pdf`. Regenerate any time.
+
+The editor uses lightweight markup: `**text**` becomes bold and a line of underscores becomes a horizontal rule. Copy strips them; downloads render them as real formatting.
+
+## Privacy
+
+All your data — resume text, instructions, reference letter, job descriptions, generated letters, and history — is stored only in your own browser's `localStorage`. Nothing is persisted on a server. The Anthropic API call is made server-side so the API key never reaches the browser.
+
+## Tech stack
+
+Next.js (App Router) + TypeScript + Tailwind CSS. Anthropic SDK for generation, `pdf-parse` and `mammoth` for resume parsing, `@mozilla/readability` + `jsdom` for URL extraction, `docx` and `jspdf` for exports.
+
+## Running locally
 
 ```bash
+git clone https://github.com/<your-username>/got-you-covered.git
+cd got-you-covered
 npm install
-cp .env.example .env.local   # then paste your real key
+cp .env.example .env.local
+# edit .env.local and paste your own ANTHROPIC_API_KEY
 npm run dev
 ```
 
-Open http://localhost:3000.
+Then open http://localhost:3000.
 
 `.env.local` keys:
-
 ```
 ANTHROPIC_API_KEY=sk-ant-...
 ANTHROPIC_MODEL=claude-sonnet-4-6   # optional override
 ```
 
-## Using it
-
-1. **Profile** — upload your resume (PDF or .docx). It's parsed to plain text in the browser-side via a server route; the text is editable. Add reusable instructions (tone, things to emphasize, things to avoid). Optionally upload a past cover letter for style.
-2. **The job** — paste the job description or give a URL. URLs are scraped server-side; sites like LinkedIn / Indeed / Glassdoor block scrapers, so paste the text for those. Company + role auto-detect from the JD.
-3. **Generate** — streams the letter into an editable view. Copy, regenerate, or download as `.docx` / `.pdf`.
-
-## Deploy to Vercel (free)
-
-1. Push this repo to GitHub.
-2. Import the repo in Vercel.
-3. In Project Settings → Environment Variables, add `ANTHROPIC_API_KEY` (and optionally `ANTHROPIC_MODEL`).
-4. Deploy. No other config needed — `app/api/*` routes run on Vercel's serverless runtime.
-
 ## Notes
 
-- PDF parsing uses `pdf-parse`; scanned/image-only PDFs won't extract text.
-- URL extraction uses `@mozilla/readability` + `jsdom`. JS-heavy pages may fail — paste the text in that case.
-- The Anthropic call streams via `messages.stream`. Default model is `claude-sonnet-4-6`.
+- PDF parsing uses `pdf-parse`; scanned / image-only PDFs won't extract text.
+- URL extraction works on most pages but not on heavily JavaScript-rendered or login-gated sites — paste the text in that case.
