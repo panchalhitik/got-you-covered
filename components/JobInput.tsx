@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { JobData, jobStore } from "@/lib/storage";
 
 export default function JobInput({
@@ -16,7 +16,12 @@ export default function JobInput({
   const [companyErr, setCompanyErr] = useState<string | null>(null);
   const [detecting, setDetecting] = useState(false);
 
+  // valueRef always points to the latest props.value so async detection
+  // (which fires after a network roundtrip) doesn't apply updates on top
+  // of a stale snapshot.
+  const valueRef = useRef(value);
   useEffect(() => {
+    valueRef.current = value;
     jobStore.save(value);
   }, [value]);
 
@@ -36,8 +41,9 @@ export default function JobInput({
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Scrape failed");
-      onChange({ ...value, jobText: data.text });
-      detectFields(data.text);
+      // Replace text AND clear stale company/role; detection will fill them in.
+      onChange({ ...value, jobText: data.text, company: "", role: "" });
+      detectFields(data.text, true);
     } catch (e: unknown) {
       setScrapeErr(e instanceof Error ? e.message : "Scrape failed");
     } finally {
@@ -65,7 +71,7 @@ export default function JobInput({
     }
   }
 
-  async function detectFields(text: string) {
+  async function detectFields(text: string, overwrite: boolean = false) {
     if (!text || text.trim().length < 50) return;
     setDetecting(true);
     try {
@@ -76,14 +82,33 @@ export default function JobInput({
       });
       if (!res.ok) return;
       const data = await res.json();
-      const next = { ...value };
+      // Always merge into the LATEST state, not the closure-captured one.
+      const current = valueRef.current;
+      const next = { ...current };
       let changed = false;
-      if (data.company && !next.company) { next.company = data.company; changed = true; }
-      if (data.role && !next.role) { next.role = data.role; changed = true; }
+      if (data.company && (overwrite || !next.company)) {
+        next.company = data.company;
+        changed = true;
+      }
+      if (data.role && (overwrite || !next.role)) {
+        next.role = data.role;
+        changed = true;
+      }
       if (changed) onChange(next);
     } finally {
       setDetecting(false);
     }
+  }
+
+  function handleJobPaste(e: React.ClipboardEvent<HTMLTextAreaElement>) {
+    const pasted = e.clipboardData.getData("text");
+    if (!pasted || pasted.trim().length < 50) return;
+    // Wait one tick for React to apply the paste, then detect against the
+    // latest text (read via valueRef so we always see the post-paste state).
+    setTimeout(() => {
+      const latest = valueRef.current.jobText;
+      detectFields(latest || pasted, true);
+    }, 50);
   }
 
   return (
@@ -151,13 +176,14 @@ export default function JobInput({
           placeholder="Paste or edit the full job description here..."
           value={value.jobText}
           onChange={(e) => update("jobText", e.target.value)}
+          onPaste={handleJobPaste}
           onBlur={() => {
             if (value.jobText && (!value.company || !value.role)) detectFields(value.jobText);
           }}
         />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-2">
         <div>
           <label className="label">Company</label>
           <input
@@ -176,6 +202,16 @@ export default function JobInput({
             onChange={(e) => update("role", e.target.value)}
           />
         </div>
+      </div>
+      <div className="flex justify-end mb-4">
+        <button
+          type="button"
+          className="btn-soft text-xs"
+          onClick={() => detectFields(value.jobText, true)}
+          disabled={detecting || value.jobText.trim().length < 50}
+        >
+          {detecting ? "Detecting…" : "Re-detect from job description"}
+        </button>
       </div>
 
       <div className="mb-2">
