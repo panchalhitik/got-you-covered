@@ -88,23 +88,26 @@ export default function JobInput({
 
   return (
     <section className="card">
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <h2 className="text-base font-semibold">2 — The job</h2>
-          <p className="text-xs text-muted">Paste the JD or give a URL. We&apos;ll extract the text and prefill company + role.</p>
+      <div className="flex items-center justify-between mb-5 gap-3 flex-wrap">
+        <div className="flex items-baseline gap-4">
+          <span className="section-number">02</span>
+          <div>
+            <h2 className="font-display text-lg uppercase tracking-wider">The job</h2>
+            <p className="text-xs text-muted mt-1">Paste the JD or give a URL. We&apos;ll extract the text and prefill company + role.</p>
+          </div>
         </div>
         <div className="inline-flex rounded-md border border-border overflow-hidden text-xs">
           <button
             type="button"
             onClick={() => update("mode", "paste")}
-            className={`px-3 py-1 ${value.mode === "paste" ? "bg-accent text-white" : "text-muted hover:text-white"}`}
+            className={`px-3 py-1.5 ${value.mode === "paste" ? "bg-accent text-white" : "text-muted hover:text-white"}`}
           >
             Paste text
           </button>
           <button
             type="button"
             onClick={() => update("mode", "url")}
-            className={`px-3 py-1 ${value.mode === "url" ? "bg-accent text-white" : "text-muted hover:text-white"}`}
+            className={`px-3 py-1.5 ${value.mode === "url" ? "bg-accent text-white" : "text-muted hover:text-white"}`}
           >
             From URL
           </button>

@@ -25,13 +25,16 @@ export default function Profile({
 
   return (
     <section className="card">
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <h2 className="text-base font-semibold">1 — Your profile</h2>
-          <p className="text-xs text-muted">Reused across every letter. Stored only in this browser.</p>
+      <div className="flex items-center justify-between mb-5 gap-3">
+        <div className="flex items-baseline gap-4">
+          <span className="section-number">01</span>
+          <div>
+            <h2 className="font-display text-lg uppercase tracking-wider">Your profile</h2>
+            <p className="text-xs text-muted mt-1">Reused across every letter. Stored only in this browser.</p>
+          </div>
         </div>
         {value.resume && (
-          <span className="tag">{resumeWords} words in resume</span>
+          <span className="tag">{resumeWords} words</span>
         )}
       </div>
 
