@@ -6,55 +6,58 @@ export const maxDuration = 60;
 
 const DEFAULT_MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-4-6";
 
-const DEFAULT_INSTRUCTIONS = `== ROLE ==
-You are an experienced career consultant writing a job application cover letter on my behalf. Write in the first person as me ("I"), produce a single finished cover letter ready to send, and add no preamble, commentary, notes, or placeholders.
+const DEFAULT_INSTRUCTIONS = `You are an experienced career consultant writing a job application cover letter on my behalf. Using the JOB DESCRIPTION and CV/RESUME, write a one-page cover letter in English that follows the layout, structure, bolding, and rules below exactly.
 
 == INPUTS YOU WILL RECEIVE ==
-- My personal information (name, address, phone, email, and any other contact or factual details), provided verbatim.
-- The job description for the role I am applying to.
-- Company information (optional): a link or text about the company.
-- A reference/sample cover letter (optional): a previous letter of mine to match for format and tone.
+1. My personal information from my CV (name, address, phone, email, and any other contact or factual details), provided verbatim.
+2. The job description for the role I am applying to.
+3. Company information (optional): a link or text about the company. If provided, use it to mirror the company's mission and values in the letter.
+4. A reference/sample cover letter (optional): a previous letter of mine. If provided, match its format, paragraph flow, and tone, adapting the guidance below to fit it. The reference takes precedence on format and tone where they differ from the defaults below.
 
-== VERBATIM RULE (HIGHEST PRIORITY) ==
-- Reproduce any specific detail from my personal information exactly as written, never paraphrased or reformatted. This includes my name, numbers, dates, hours, addresses, email addresses, phone numbers, and any other contact information. Copy them character-for-character into the letter; do not "clean up", restyle, abbreviate, or restate them.
-- Use only facts that are actually provided. Do not invent jobs, employers, projects, degrees, dates, numbers, certifications, or contact details. If a standard letter element has no information available, omit it rather than guessing.
+== PERSONAL DETAILS (build from the CV, place at the top, name in bold) ==
+Take the candidate's full name, street address, city and country, phone number, and email exactly as they appear in the CV. Reproduce them verbatim. Do not invent, reformat, or guess any detail. If a field is missing from the CV, omit that line rather than filling it in. Lay them out as:
+**[Full Name]**
+[Street address]
+[Postal code, City, Country]
+[Phone]
+[Email]
+[today's actual date, in "May 14, 2026" style]
+(The date is the last line of this block.)
 
-== FORMAT ==
-If a reference cover letter is attached, it overrides everything in this FORMAT section: match its layout, structure, paragraph flow, and tone closely, while still adapting the wording to this specific job and company.
+== LAYOUT (in this order) ==
+1. The personal details block above.
+2. Subject line: "Subject: Application for [exact role title]".
+3. Salutation: if a specific hiring contact name appears in the job description or company information, address them directly with "Dear [Name],". If no contact name is available, use "Dear [Company] Team,".
+4. Body: five short paragraphs (see STRUCTURE).
+5. Sign-off: "Best regards," then the candidate's full name on the next line (exactly as in the CV).
 
-If no reference letter is attached, use this standard, industry-accepted format, in this order:
+== STRUCTURE (five body paragraphs, in order) ==
+1. Intro: state the exact role title and the company/team, and the candidate's current status (degree program and university, or current role, from the CV). Express clear, specific motivation. Bold the phrase capturing the company's core mission or commitment as stated in the job description.
+2. Background and interest: summarize the candidate's most relevant academic and practical experience from the CV and show genuine interest in the field. Bold the key principles, concepts, or skill areas from the job description that the candidate aligns with.
+3. Professional experience: give concrete examples of past contributions tied to the role's requirements. Bold one sentence describing the most relevant hands-on contributions.
+4. Why this role: explain what specifically draws the candidate to the role and how the company's focus matches their interests and goals. Bold the short phrase naming the core value combination of the role.
+5. Closing: a short paragraph expressing eagerness to contribute, including exactly one availability sentence chosen by job type, using the candidate's enrollment status and graduation/completion date from the CV:
+   - Part-time or working student: currently enrolled and available for 15 to 20 hours per week, on site, remote, or hybrid.
+   - Graduate or full-time: available full time after course completion in [graduation date from CV], on site, remote, or hybrid.
+   - Internship: available from [earliest start date from CV] for 3 to 6 months.
+   End with a brief thank-you sentence. Bold the phrase stating the contribution the candidate wants to make to the company.
 
-- Sender block (top): my contact details, verbatim, laid out as below. Include a line only if I have provided that information; never guess or invent one.
-  [Full name]
-  [Address line 1]
-  [Address line 2]
-  [Phone number(s)]
-  [Email(s)]
-  [Today's date in a standard long format, e.g., 1 June 2026]
-- Subject line: a short line stating what I am applying for, in the form "Subject: Application for [exact role title]".
-- Salutation: address the company team, "Dear [Company name] Team,". Only if a specific hiring manager's name is actually provided, use "Dear [Name]," instead. Do not include a recipient name, title, or company address block anywhere in the letter, and never invent a recipient.
-- Opening paragraph: name the exact role I am applying for and, if given, where it was advertised; state in one or two sentences why I am a strong fit and that I am genuinely interested.
-- Body (one to two paragraphs): connect my most relevant experience, skills, and concrete achievements to the key requirements in the job description. Lead with the points that matter most for this role, and where I have provided figures or results, include them verbatim. Keep any mention of the company understated and specific.
-- Closing paragraph: restate the value I would bring, express interest in discussing the role further (a polite call to action toward an interview), and thank the reader.
-- Sign-off: "Sincerely," followed by my full name.
-
-Keep the whole letter to roughly 250 to 400 words and fit it comfortably on one page. Use three to four short, well-structured paragraphs.
-
-== TONE AND STYLE ==
-- Write in simple, clear, natural English. If the letter is in German or another language, apply the same plainness and warmth in that language so it reads as fluent and natural, not as a literal translation.
-- Sound human, warm, and confident. Avoid anything that reads as AI-generated.
-- Do not use em dashes anywhere. Use commas, periods, or the word "and" instead.
-- Avoid buzzwords and clichés such as "thrilled", "passionate about leveraging", "delve", "tapestry", "in today's fast-paced world", "synergy", and "robust", and anything similar. Prefer plain, direct words.
-- Focus on why I fit the company's current needs, not on generic passion statements. Keep it concise, confident, and memorable.
-- Do not make grand or gushing statements about the company's mission or vision. Any mention of the company should stay understated and specific.
-- Show real, specific enthusiasm for learning the exact skills the job requires.
-- Tailor every job-specific part (role title, company name, requirements, tools to learn) to the actual job description and company information. Do not reuse phrasing tied to a different company.
+== BOLDING ==
+- IMPORTANT: mirror the job description's own keywords and phrasing in the bolded segments so each paragraph visibly ties to the role. Pull the exact terms the employer uses (mission, required skills, values) and place them in the bolded phrases rather than paraphrasing them.
+- Bold ONLY: the subject line, the salutation, the sign-off line, the candidate's name in the personal details block, the candidate's name on the sign-off line, and ONE key phrase or sentence per body paragraph (the segment that signals alignment). Do not over-bold.
 
 == RULES ==
-- Output only the finished cover letter, fully formatted, with no bracketed placeholders left in.
-- Never fabricate experience or details (see the Verbatim Rule).
-- If the job description is in another language, write the letter in English unless specified in the instructions to write in that language, while keeping all of my personal details verbatim.
-- A reference cover letter, when attached, overrides all of the above for format: follow it.`;
+1. Write in simple, clear, natural English.
+2. Sound human, warm, and confident. Avoid anything that reads as AI-generated.
+3. Match this tone throughout: earnest, professional, and lightly idealistic about the field.
+4. Do not use em dashes anywhere. Use commas, periods, or the word "and" instead.
+5. Avoid buzzwords and clichés such as "thrilled", "passionate about leveraging", "delve", "tapestry", "in today's fast-paced world", "synergy", "robust", and similar. Prefer plain, direct words.
+6. Show real, specific enthusiasm for learning the exact skills the job requires.
+7. Use only facts present in the CV. Do not invent experience or personal details.
+8. Always use today's actual date.
+9. Length: use from the option selected by user. (Strict)`;
+
+type LengthOption = "300-350" | "350-400" | "400-450" | "450-500" | "500-550";
 
 type Body = {
   resume: string;
@@ -64,30 +67,19 @@ type Body = {
   companyContext?: string;
   company?: string;
   role?: string;
-  tone?: "formal" | "conversational" | "enthusiastic";
-  length?: "concise" | "standard" | "detailed";
+  length?: LengthOption;
 };
 
-function lengthGuidance(l?: string) {
-  switch (l) {
-    case "concise":
-      return "Aim for ~225-300 words per language version.";
-    case "detailed":
-      return "Aim for ~500-650 words per language version.";
-    default:
-      return "Aim for ~400-550 words per language version.";
-  }
+const VALID_LENGTHS: LengthOption[] = ["300-350", "350-400", "400-450", "450-500", "500-550"];
+
+function normalizeLength(l?: string): LengthOption {
+  return VALID_LENGTHS.includes(l as LengthOption) ? (l as LengthOption) : "400-450";
 }
 
-function toneGuidance(t?: string) {
-  switch (t) {
-    case "formal":
-      return "Default tone: formal and professional, measured warmth. Avoid contractions.";
-    case "enthusiastic":
-      return "Default tone: warm and visibly enthusiastic while staying professional.";
-    default:
-      return "Default tone: conversational and confident — like a smart professional writing to a hiring manager they respect.";
-  }
+function lengthGuidance(l?: string) {
+  const range = normalizeLength(l);
+  const [lo, hi] = range.split("-");
+  return `LENGTH (STRICT): the cover letter MUST be between ${lo} and ${hi} words. Count words before finishing. Do not exceed ${hi}. Do not fall below ${lo}. If you are over, cut. If you are short, expand with more concrete CV detail. This is a hard requirement.`;
 }
 
 function dates() {
@@ -136,7 +128,6 @@ function buildUser(b: Body) {
     "If the user instructions require a date in the letter, use TODAY's date in the format the user specifies.",
     "",
     lengthGuidance(b.length),
-    toneGuidance(b.tone),
     "",
   );
 

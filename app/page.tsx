@@ -30,8 +30,7 @@ const INITIAL_JOB: JobData = {
   companyContext: "",
   company: "",
   role: "",
-  tone: "conversational",
-  length: "standard",
+  length: "400-450",
 };
 
 export default function Home() {
@@ -80,7 +79,6 @@ export default function Home() {
           companyContext: job.companyContext,
           company: job.company,
           role: job.role,
-          tone: job.tone,
           length: job.length,
         }),
         signal: ctrl.signal,

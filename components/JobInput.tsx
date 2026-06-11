@@ -249,31 +249,19 @@ export default function JobInput({
         </details>
       )}
 
-      <div className="grid grid-cols-2 gap-4 mt-4">
-        <div>
-          <label className="label">Tone</label>
-          <select
-            className="input"
-            value={value.tone}
-            onChange={(e) => update("tone", e.target.value as JobData["tone"])}
-          >
-            <option value="conversational">Conversational</option>
-            <option value="formal">Formal</option>
-            <option value="enthusiastic">Enthusiastic</option>
-          </select>
-        </div>
-        <div>
-          <label className="label">Length</label>
-          <select
-            className="input"
-            value={value.length}
-            onChange={(e) => update("length", e.target.value as JobData["length"])}
-          >
-            <option value="concise">Concise</option>
-            <option value="standard">Standard</option>
-            <option value="detailed">Detailed</option>
-          </select>
-        </div>
+      <div className="mt-4">
+        <label className="label">Length (strict word count)</label>
+        <select
+          className="input"
+          value={value.length}
+          onChange={(e) => update("length", e.target.value as JobData["length"])}
+        >
+          <option value="300-350">300 – 350 words</option>
+          <option value="350-400">350 – 400 words</option>
+          <option value="400-450">400 – 450 words</option>
+          <option value="450-500">450 – 500 words</option>
+          <option value="500-550">500 – 550 words</option>
+        </select>
       </div>
     </section>
   );

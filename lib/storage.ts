@@ -6,6 +6,8 @@ export type ProfileData = {
   referenceFileName: string;
 };
 
+export type JobLength = "300-350" | "350-400" | "400-450" | "450-500" | "500-550";
+
 export type JobData = {
   mode: "paste" | "url";
   jobUrl: string;
@@ -14,8 +16,7 @@ export type JobData = {
   companyContext: string;
   company: string;
   role: string;
-  tone: "formal" | "conversational" | "enthusiastic";
-  length: "concise" | "standard" | "detailed";
+  length: JobLength;
 };
 
 export type HistoryItem = {
@@ -47,9 +48,10 @@ const DEFAULT_JOB: JobData = {
   companyContext: "",
   company: "",
   role: "",
-  tone: "conversational",
-  length: "standard",
+  length: "400-450",
 };
+
+const VALID_LENGTHS: JobLength[] = ["300-350", "350-400", "400-450", "450-500", "500-550"];
 
 function safeLoad<T>(key: string, fallback: T): T {
   if (typeof window === "undefined") return fallback;
@@ -75,7 +77,14 @@ export const profileStore = {
 };
 
 export const jobStore = {
-  load: () => safeLoad<JobData>(JOB_KEY, DEFAULT_JOB),
+  load: () => {
+    const loaded = safeLoad<JobData>(JOB_KEY, DEFAULT_JOB);
+    // Migrate legacy length values ("concise"/"standard"/"detailed") and drop stale fields like tone.
+    if (!VALID_LENGTHS.includes(loaded.length)) {
+      loaded.length = "400-450";
+    }
+    return loaded;
+  },
   save: (v: JobData) => safeSave(JOB_KEY, v),
 };
 
