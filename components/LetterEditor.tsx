@@ -131,6 +131,11 @@ export default function LetterEditor({
           <p className="text-xs text-muted mt-2">
             <code>**text**</code> marks bold; a line of underscores becomes a horizontal rule in the .docx / .pdf. Copy strips them; downloads render them as real formatting.
           </p>
+          <p className="text-xs text-amber-400/80 mt-1">
+            Both downloads embed a real text layer (selectable and ATS-readable). If you re-save the file, use
+            &quot;Save as PDF&quot; / &quot;Export to PDF&quot; — never &quot;Print to PDF&quot;, which turns the text into an image that
+            applicant tracking systems cannot read.
+          </p>
         </>
       )}
     </section>

@@ -1,6 +1,9 @@
 export type ProfileData = {
   resume: string;
   resumeFileName: string;
+  // Raw bytes of the uploaded resume when it was a .docx (base64) — lets the
+  // CV optimizer edit the original file in place, preserving its design.
+  resumeDocxBase64: string;
   instructions: string;
   referenceLetter: string;
   referenceFileName: string;
@@ -19,6 +22,11 @@ export type JobData = {
   length: JobLength;
 };
 
+export type CvData = {
+  optimized: string;
+  rating: string;
+};
+
 export type HistoryItem = {
   id: string;
   createdAt: number;
@@ -31,10 +39,12 @@ const PROFILE_KEY = "gyc.profile.v1";
 const JOB_KEY = "gyc.job.v1";
 const HISTORY_KEY = "gyc.history.v1";
 const LETTER_KEY = "gyc.letter.v1";
+const CV_KEY = "gyc.cv.v1";
 
 const DEFAULT_PROFILE: ProfileData = {
   resume: "",
   resumeFileName: "",
+  resumeDocxBase64: "",
   instructions: "",
   referenceLetter: "",
   referenceFileName: "",
@@ -73,7 +83,21 @@ function safeSave<T>(key: string, value: T) {
 
 export const profileStore = {
   load: () => safeLoad<ProfileData>(PROFILE_KEY, DEFAULT_PROFILE),
-  save: (v: ProfileData) => safeSave(PROFILE_KEY, v),
+  save: (v: ProfileData) => {
+    if (typeof window === "undefined") return;
+    try {
+      window.localStorage.setItem(PROFILE_KEY, JSON.stringify(v));
+    } catch {
+      // Quota exceeded (large embedded .docx) — retry without the raw bytes so
+      // the text fields still persist.
+      try {
+        window.localStorage.setItem(
+          PROFILE_KEY,
+          JSON.stringify({ ...v, resumeDocxBase64: "" }),
+        );
+      } catch {}
+    }
+  },
 };
 
 export const jobStore = {
@@ -97,6 +121,11 @@ export const letterStore = {
     if (typeof window === "undefined") return;
     window.localStorage.setItem(LETTER_KEY, v);
   },
+};
+
+export const cvStore = {
+  load: () => safeLoad<CvData>(CV_KEY, { optimized: "", rating: "" }),
+  save: (v: CvData) => safeSave(CV_KEY, v),
 };
 
 export const historyStore = {

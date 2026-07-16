@@ -6,11 +6,25 @@ type Props = {
   accept: string;
   label: string;
   hint?: string;
-  onText: (text: string, filename: string) => void;
+  onText: (text: string, filename: string, docxBase64?: string) => void;
+  // When true and the file is a .docx, also return its raw bytes as base64.
+  captureRaw?: boolean;
   disabled?: boolean;
 };
 
-export default function FileDrop({ accept, label, hint, onText, disabled }: Props) {
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => {
+      const s = String(r.result || "");
+      resolve(s.includes(",") ? s.slice(s.indexOf(",") + 1) : s);
+    };
+    r.onerror = () => reject(r.error);
+    r.readAsDataURL(file);
+  });
+}
+
+export default function FileDrop({ accept, label, hint, onText, captureRaw, disabled }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -24,7 +38,13 @@ export default function FileDrop({ accept, label, hint, onText, disabled }: Prop
       const res = await fetch("/api/parse", { method: "POST", body: fd });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Parse failed");
-      onText(data.text, data.name || file.name);
+      let raw: string | undefined;
+      if (captureRaw && file.name.toLowerCase().endsWith(".docx")) {
+        try {
+          raw = await fileToBase64(file);
+        } catch {}
+      }
+      onText(data.text, data.name || file.name, raw);
     } catch (e: unknown) {
       setErr(e instanceof Error ? e.message : "Parse failed");
     } finally {

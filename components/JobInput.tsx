@@ -1,14 +1,17 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { JobData, jobStore } from "@/lib/storage";
+import { JobData } from "@/lib/storage";
 
 export default function JobInput({
   value,
   onChange,
+  hideExtras = false,
 }: {
   value: JobData;
   onChange: (v: JobData) => void;
+  // CV-optimizer tab: hide the cover-letter-only fields (company page, length)
+  hideExtras?: boolean;
 }) {
   const [scraping, setScraping] = useState(false);
   const [scrapeErr, setScrapeErr] = useState<string | null>(null);
@@ -18,11 +21,11 @@ export default function JobInput({
 
   // valueRef always points to the latest props.value so async detection
   // (which fires after a network roundtrip) doesn't apply updates on top
-  // of a stale snapshot.
+  // of a stale snapshot. Persistence lives in the parent page, gated on
+  // hydration — saving here on mount would clobber localStorage.
   const valueRef = useRef(value);
   useEffect(() => {
     valueRef.current = value;
-    jobStore.save(value);
   }, [value]);
 
   function update<K extends keyof JobData>(key: K, v: JobData[K]) {
@@ -214,6 +217,7 @@ export default function JobInput({
         </button>
       </div>
 
+      {!hideExtras && (
       <div className="mb-2">
         <label className="label">Company page URL (optional, for extra context)</label>
         <div className="flex gap-2">
@@ -234,8 +238,9 @@ export default function JobInput({
         </div>
         {companyErr && <div className="text-xs text-amber-400 mt-2">{companyErr}</div>}
       </div>
+      )}
 
-      {value.companyContext && (
+      {!hideExtras && value.companyContext && (
         <details className="mt-2">
           <summary className="text-xs text-muted cursor-pointer">
             Company context preview ({value.companyContext.length} chars)
@@ -249,6 +254,7 @@ export default function JobInput({
         </details>
       )}
 
+      {!hideExtras && (
       <div className="mt-4">
         <label className="label">Length (strict word count)</label>
         <select
@@ -263,6 +269,7 @@ export default function JobInput({
           <option value="500-550">500 – 550 words</option>
         </select>
       </div>
+      )}
     </section>
   );
 }
