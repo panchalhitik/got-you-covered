@@ -1,36 +1,53 @@
-# Got you CoVered
+<p align="center">
+  <img src="public/logo.png" alt="Got you CoVered logo" width="150" />
+</p>
 
-Generate tailored, one-page cover letters from your resume and a target job description, powered by Claude.
+<h1 align="center">Got you CoVered</h1>
 
-**Live app: https://got-you-covered-cv.vercel.app/**
+<p align="center">
+  Your whole job-application workflow in one place: write tailored cover letters, score and optimize your CV against any job description, and track every application. Powered by Claude, local-first.
+</p>
+
+<p align="center">
+  <a href="https://got-you-covered-cv.vercel.app/"><b>Live app → got-you-covered-cv.vercel.app</b></a>
+</p>
+
+<p align="center">
+  <img src="public/screenshot-landing.png" alt="Got you CoVered landing screen" width="100%" />
+</p>
+
+---
 
 ## What it does
 
-- Reads your resume (PDF or `.docx`) and turns it into editable plain text.
-- Accepts a job description as pasted text or a URL — for URLs, the page is fetched server-side and the main content is extracted.
-- Auto-detects company and role from the job description.
-- Writes a tailored cover letter with Claude, streaming the output as it generates.
-- Supports a built-in default prompt or your own always-applied instructions, plus an optional reference cover letter to emulate your voice and layout.
-- Exports to `.docx` and `.pdf` with proper formatting — bold runs for headers / salutations / sign-offs, real horizontal rules, 1" margins, 11pt body.
-- Tone (formal / conversational / enthusiastic) and length (concise / standard / detailed) selectors.
-- Keeps a local history of your last 50 letters so you can reload them later.
+Three tools that share one profile and one job description, so you never re-enter anything.
 
-## How to use it
+### ✍️ Cover Letter generator
+- Upload your resume (PDF or `.docx`) — parsed to editable text on upload.
+- Paste the job description or give a URL (scraped server-side); company and role auto-detect.
+- Optional always-applied instructions and an optional reference letter to emulate your voice and layout. Leave instructions blank to use a built-in default prompt.
+- Strict word-count control (300–350 up to 500–550 words).
+- Streams the letter into an editable view. Export to `.docx` / `.pdf` with real bold formatting, copy to clipboard, regenerate, and one-click **Track application**.
 
-1. **Profile** — upload your resume. Optionally add always-applied instructions (tone, things to emphasize, must-avoid phrases) and an optional reference cover letter for style. If you leave instructions blank, a built-in default prompt produces a clean one-page business letter.
-2. **The job** — paste the job description, or give a URL and click *Fetch text*. Sites like LinkedIn / Indeed / Glassdoor block scrapers; paste the text for those. Company and role auto-fill from the description.
-3. **Generate** — the letter streams into an editable view. Edit anything inline.
-4. **Export** — Copy to clipboard (plain text), Download `.docx`, or Download `.pdf`. Regenerate any time.
+### 📄 CV Optimizer
+- **Rate my CV** — a ruthless six-second-skim review against the job: a visual **score meter** out of 100, missing ATS keywords, red flags, and the highest-impact fixes, kept short and specific.
+- **Optimize my CV** — rewrites your CV to match the job (JD keywords, XYZ bullets, project filtering) using **only facts from your CV**, nothing invented.
+- Upload a **`.docx`** and the optimizer edits your **original file in place** — photo, fonts, and layout preserved. Upload a PDF and it produces a clean re-formatted version.
+- Download `.docx` / `.pdf`, or push the optimized CV straight into the cover letter generator.
 
-The editor uses lightweight markup: `**text**` becomes bold and a line of underscores becomes a horizontal rule. Copy strips them; downloads render them as real formatting.
+### 📊 Job Tracker
+- Log every application (company, role, link, type, status) — up to 1000 entries.
+- Live stats: applications today vs. an **adjustable daily goal**, totals per status, and rejection rate.
+- Search and filter by status and type; edit status / type / notes inline.
+- Add the current job with one click right after generating its cover letter.
 
 ## Privacy
 
-All your data — resume text, instructions, reference letter, job descriptions, generated letters, and history — is stored only in your own browser's `localStorage`. Nothing is persisted on a server. The Anthropic API call is made server-side so the API key never reaches the browser.
+Everything — resume, instructions, generated letters, optimized CVs, and tracked applications — is stored only in your own browser's `localStorage`. Nothing is persisted on a server. The Anthropic API is called server-side, so your API key never reaches the browser.
 
 ## Tech stack
 
-Next.js (App Router) + TypeScript + Tailwind CSS. Anthropic SDK for generation, `pdf-parse` and `mammoth` for resume parsing, `@mozilla/readability` + `jsdom` for URL extraction, `docx` and `jspdf` for exports.
+Next.js (App Router) + TypeScript + Tailwind CSS. Anthropic SDK for generation, `pdf-parse` and `mammoth` for resume parsing, `@mozilla/readability` + `jsdom` for URL extraction, `jszip` for in-place `.docx` editing, `docx` and `jspdf` for exports.
 
 ## Running locally
 
@@ -38,8 +55,7 @@ Next.js (App Router) + TypeScript + Tailwind CSS. Anthropic SDK for generation, 
 git clone https://github.com/<your-username>/got-you-covered.git
 cd got-you-covered
 npm install
-cp .env.example .env.local
-# edit .env.local and paste your own ANTHROPIC_API_KEY
+cp .env.example .env.local     # then paste your own ANTHROPIC_API_KEY
 npm run dev
 ```
 
@@ -54,4 +70,5 @@ ANTHROPIC_MODEL=claude-sonnet-4-6   # optional override
 ## Notes
 
 - PDF parsing uses `pdf-parse`; scanned / image-only PDFs won't extract text.
-- URL extraction works on most pages but not on heavily JavaScript-rendered or login-gated sites — paste the text in that case.
+- URL extraction works on most pages but not on heavily JavaScript-rendered or login-gated sites (LinkedIn, Indeed, Glassdoor) — paste the text in that case.
+- All exports embed a real text layer, so they are selectable and ATS-readable. If you re-save an exported file, use "Save as PDF" / "Export to PDF", never "Print to PDF", which turns text into an image that applicant tracking systems cannot read.
