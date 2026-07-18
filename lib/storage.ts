@@ -27,6 +27,26 @@ export type CvData = {
   rating: string;
 };
 
+export type JobStatus = "applied" | "interview" | "offer" | "rejected";
+export type JobType = "full-time" | "part-time" | "internship" | "working-student";
+
+export type TrackedJob = {
+  id: string;
+  createdAt: number;
+  company: string;
+  role: string;
+  link: string;
+  type: JobType;
+  status: JobStatus;
+  notes: string;
+};
+
+export type TrackerSettings = {
+  dailyTarget: number;
+};
+
+export const MAX_TRACKED_JOBS = 1000;
+
 export type HistoryItem = {
   id: string;
   createdAt: number;
@@ -40,6 +60,8 @@ const JOB_KEY = "gyc.job.v1";
 const HISTORY_KEY = "gyc.history.v1";
 const LETTER_KEY = "gyc.letter.v1";
 const CV_KEY = "gyc.cv.v1";
+const TRACKER_KEY = "gyc.tracker.v1";
+const TRACKER_SETTINGS_KEY = "gyc.trackerSettings.v1";
 
 const DEFAULT_PROFILE: ProfileData = {
   resume: "",
@@ -126,6 +148,34 @@ export const letterStore = {
 export const cvStore = {
   load: () => safeLoad<CvData>(CV_KEY, { optimized: "", rating: "" }),
   save: (v: CvData) => safeSave(CV_KEY, v),
+};
+
+export const trackerStore = {
+  load: (): TrackedJob[] => {
+    if (typeof window === "undefined") return [];
+    try {
+      const raw = window.localStorage.getItem(TRACKER_KEY);
+      if (!raw) return [];
+      const arr = JSON.parse(raw);
+      return Array.isArray(arr) ? arr.slice(0, MAX_TRACKED_JOBS) : [];
+    } catch {
+      return [];
+    }
+  },
+  save: (list: TrackedJob[]) => {
+    if (typeof window === "undefined") return;
+    try {
+      window.localStorage.setItem(
+        TRACKER_KEY,
+        JSON.stringify(list.slice(0, MAX_TRACKED_JOBS)),
+      );
+    } catch {}
+  },
+};
+
+export const trackerSettingsStore = {
+  load: (): TrackerSettings => safeLoad<TrackerSettings>(TRACKER_SETTINGS_KEY, { dailyTarget: 10 }),
+  save: (v: TrackerSettings) => safeSave(TRACKER_SETTINGS_KEY, v),
 };
 
 export const historyStore = {

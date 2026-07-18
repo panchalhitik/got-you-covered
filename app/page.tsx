@@ -5,14 +5,18 @@ import Profile from "@/components/Profile";
 import JobInput from "@/components/JobInput";
 import LetterEditor from "@/components/LetterEditor";
 import CvTools from "@/components/CvTools";
+import JobTracker from "@/components/JobTracker";
 import {
   HistoryItem,
   JobData,
+  MAX_TRACKED_JOBS,
   ProfileData,
+  TrackedJob,
   historyStore,
   jobStore,
   letterStore,
   profileStore,
+  trackerStore,
 } from "@/lib/storage";
 
 const INITIAL_PROFILE: ProfileData = {
@@ -35,7 +39,7 @@ const INITIAL_JOB: JobData = {
   length: "400-450",
 };
 
-type Tab = "letter" | "cv";
+type Tab = "letter" | "cv" | "tracker";
 const TAB_KEY = "gyc.tab.v1";
 
 export default function Home() {
@@ -56,7 +60,7 @@ export default function Home() {
     setHistory(historyStore.load());
     try {
       const savedTab = window.localStorage.getItem(TAB_KEY);
-      if (savedTab === "letter" || savedTab === "cv") setTab(savedTab);
+      if (savedTab === "letter" || savedTab === "cv" || savedTab === "tracker") setTab(savedTab);
     } catch {}
     setHydrated(true);
   }, []);
@@ -156,6 +160,33 @@ export default function Home() {
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  // Called from the letter tab after generating — logs the current job.
+  function trackCurrentJob(): string {
+    const company = job.company.trim();
+    const role = job.role.trim();
+    if (!company && !role) return "Fill in company/role first";
+    const list = trackerStore.load();
+    const dup = list.find(
+      (j) =>
+        j.company.toLowerCase() === company.toLowerCase() &&
+        j.role.toLowerCase() === role.toLowerCase(),
+    );
+    if (dup) return "Already in tracker";
+    if (list.length >= MAX_TRACKED_JOBS) return "Tracker is full (1000)";
+    const entry: TrackedJob = {
+      id: crypto.randomUUID(),
+      createdAt: Date.now(),
+      company: company || "Unknown company",
+      role: role || "Unknown role",
+      link: job.mode === "url" ? job.jobUrl.trim() : "",
+      type: "full-time",
+      status: "applied",
+      notes: "",
+    };
+    trackerStore.save([entry, ...list]);
+    return "Added to tracker ✓";
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex justify-center">
@@ -178,18 +209,33 @@ export default function Home() {
           >
             CV optimizer
           </button>
+          <button
+            type="button"
+            onClick={() => switchTab("tracker")}
+            className={`px-6 py-2.5 text-sm font-display uppercase tracking-wider transition-colors ${
+              tab === "tracker" ? "bg-accent text-white" : "text-muted hover:text-white"
+            }`}
+          >
+            Job tracker
+          </button>
         </div>
       </div>
 
-      <Profile value={profile} onChange={setProfile} minimal={tab === "cv"} />
-      <JobInput value={job} onChange={setJob} hideExtras={tab === "cv"} />
+      {tab !== "tracker" && (
+        <>
+          <Profile value={profile} onChange={setProfile} minimal={tab === "cv"} />
+          <JobInput value={job} onChange={setJob} hideExtras={tab === "cv"} />
 
-      {!canGenerate && (
-        <div className="text-xs text-muted px-1">
-          {!profile.resume.trim() ? "Add a resume above. " : ""}
-          {!job.jobText.trim() ? "Paste or fetch a job description. " : ""}
-        </div>
+          {!canGenerate && (
+            <div className="text-xs text-muted px-1">
+              {!profile.resume.trim() ? "Add a resume above. " : ""}
+              {!job.jobText.trim() ? "Paste or fetch a job description. " : ""}
+            </div>
+          )}
+        </>
       )}
+
+      {tab === "tracker" && <JobTracker />}
 
       {tab === "cv" && (
         <CvTools
@@ -212,6 +258,7 @@ export default function Home() {
           error={error}
           onRegenerate={generate}
           canRegenerate={canGenerate}
+          onTrack={trackCurrentJob}
         />
       )}
 

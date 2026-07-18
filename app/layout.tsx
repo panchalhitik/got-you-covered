@@ -23,7 +23,8 @@ const pixel = Press_Start_2P({
 
 export const metadata: Metadata = {
   title: "Got you CoVered",
-  description: "Generate tailored cover letters from your resume + a target job description.",
+  description:
+    "Tailored cover letters, CV optimization against any job description, and a built-in job application tracker — all local-first.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -46,7 +47,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   Got you <span className="cv-letter">C</span>o<span className="v-letter">V</span>ered
                 </div>
                 <div className="text-[10px] uppercase tracking-[0.2em] text-muted font-pixel">
-                  Cover letters · powered by Claude
+                  Letters · CV · Tracker
                 </div>
               </div>
             </div>
@@ -57,7 +58,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <section className="max-w-5xl mx-auto px-6 pt-12 pb-10 text-center">
           <div className="flex justify-center mb-6">
-            <span className="chip">Tailored · One page · In seconds</span>
+            <span className="chip">Write · Optimize · Track</span>
           </div>
           <div className="flex justify-center">
             <div className="relative">
@@ -85,7 +86,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <span className="gradient-text">ered</span>
           </h1>
           <p className="mt-4 text-muted max-w-xl mx-auto text-sm sm:text-base">
-            Upload your resume. Paste the job. Get a tailored, ready-to-send cover letter, exported to <code className="text-white">.docx</code> or <code className="text-white">.pdf</code>.
+            Your whole application workflow: generate tailored cover letters, score and optimize your CV against
+            the job description, and track every application — exported to <code className="text-white">.docx</code> / <code className="text-white">.pdf</code>, stored only in your browser.
           </p>
         </section>
 
@@ -93,7 +95,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <footer className="max-w-5xl mx-auto px-6 py-10 text-xs text-muted text-center">
           <div className="divider-glow mb-8" />
-          Your resume, instructions, and generated letters live only in this browser&apos;s localStorage. The Anthropic API is called server-side; the key never reaches your browser.
+          Your resume, instructions, generated letters, optimized CVs, and tracked applications live only in this browser&apos;s localStorage. The Anthropic API is called server-side; the key never reaches your browser.
         </footer>
       </body>
     </html>

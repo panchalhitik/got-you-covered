@@ -13,6 +13,8 @@ type Props = {
   error: string | null;
   onRegenerate: () => void;
   canRegenerate: boolean;
+  // Logs the current company/role in the job tracker; returns a feedback message.
+  onTrack?: () => string;
 };
 
 export default function LetterEditor({
@@ -24,9 +26,17 @@ export default function LetterEditor({
   error,
   onRegenerate,
   canRegenerate,
+  onTrack,
 }: Props) {
   const [copied, setCopied] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [trackMsg, setTrackMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!trackMsg) return;
+    const t = setTimeout(() => setTrackMsg(null), 2500);
+    return () => clearTimeout(t);
+  }, [trackMsg]);
 
   const plain = useMemo(() => stripBold(letter), [letter]);
   const words = useMemo(
@@ -104,6 +114,15 @@ export default function LetterEditor({
           <button className="btn-soft text-xs" onClick={exportPdf} disabled={!letter || streaming}>
             Download .pdf
           </button>
+          {onTrack && letter && !streaming && (
+            <button
+              className="btn-ghost text-xs"
+              onClick={() => setTrackMsg(onTrack())}
+              title="Log this application in the job tracker"
+            >
+              {trackMsg || "Track application"}
+            </button>
+          )}
           <button className="btn-primary text-xs" onClick={onRegenerate} disabled={streaming || !canRegenerate}>
             {streaming ? "Generating…" : letter ? "Regenerate" : "Generate"}
           </button>
