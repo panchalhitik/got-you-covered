@@ -59,6 +59,7 @@ const PROFILE_KEY = "gyc.profile.v1";
 const JOB_KEY = "gyc.job.v1";
 const HISTORY_KEY = "gyc.history.v1";
 const LETTER_KEY = "gyc.letter.v1";
+const LETTER_REVIEW_KEY = "gyc.letterReview.v1";
 const CV_KEY = "gyc.cv.v1";
 const TRACKER_KEY = "gyc.tracker.v1";
 const TRACKER_SETTINGS_KEY = "gyc.trackerSettings.v1";
@@ -142,6 +143,19 @@ export const letterStore = {
   save: (v: string) => {
     if (typeof window === "undefined") return;
     window.localStorage.setItem(LETTER_KEY, v);
+  },
+};
+
+export const letterReviewStore = {
+  load: (): string => {
+    if (typeof window === "undefined") return "";
+    return window.localStorage.getItem(LETTER_REVIEW_KEY) || "";
+  },
+  save: (v: string) => {
+    if (typeof window === "undefined") return;
+    try {
+      window.localStorage.setItem(LETTER_REVIEW_KEY, v);
+    } catch {}
   },
 };
 

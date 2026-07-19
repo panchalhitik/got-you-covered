@@ -254,6 +254,7 @@ export default function Home() {
           setLetter={setLetter}
           company={job.company}
           role={job.role}
+          jobText={job.jobText}
           streaming={streaming}
           error={error}
           onRegenerate={generate}
