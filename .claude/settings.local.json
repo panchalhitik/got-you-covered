@@ -24,7 +24,9 @@
       "Bash(curl -s -X POST http://localhost:63164/api/generate -H \"content-type: application/json\" --data-binary @gen-override.json --max-time 120 -o out-override.txt -w \"HTTP %{http_code}\\\\n\")",
       "Bash(curl -s -X POST http://localhost:63164/api/generate -H \"content-type: application/json\" --data-binary @gen-default.json --max-time 120 -o out-default.txt -w \"HTTP %{http_code}\\\\n\")",
       "Bash(curl -s -X POST http://localhost:63164/api/generate -H \"content-type: application/json\" --data-binary @gen-default.json --max-time 120 -o v2-default.txt -w \"no-override: HTTP %{http_code}\\\\n\")",
-      "Bash(curl -s -X POST http://localhost:63164/api/generate -H \"content-type: application/json\" --data-binary @gen-override.json --max-time 120 -o v2-override.txt -w \"with-override: HTTP %{http_code}\\\\n\")"
+      "Bash(curl -s -X POST http://localhost:63164/api/generate -H \"content-type: application/json\" --data-binary @gen-override.json --max-time 120 -o v2-override.txt -w \"with-override: HTTP %{http_code}\\\\n\")",
+      "Bash(curl -s -X POST http://localhost:63164/api/cv/optimize-docx -H \"content-type: application/json\" --data-binary @ds-body.json --max-time 150 -o ds-result.json -w \"HTTP %{http_code}\\\\n\")",
+      "Bash(curl -s -X POST http://localhost:53596/api/cv/optimize-docx -H \"content-type: application/json\" --data-binary @ds-body.json --max-time 180 -o ds-result.json -w \"HTTP %{http_code}\\\\n\")"
     ]
   }
 }
