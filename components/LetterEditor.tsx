@@ -166,8 +166,8 @@ export default function LetterEditor({
 
   return (
     <section className="card">
-      <div className="flex items-center justify-between mb-5 gap-3 flex-wrap">
-        <div className="flex items-baseline gap-4">
+      <div className="mb-5">
+        <div className="flex items-baseline gap-4 mb-4">
           <span className="section-number">03</span>
           <div>
             <h2 className="font-display text-lg uppercase tracking-wider">Your cover letter</h2>
@@ -176,6 +176,8 @@ export default function LetterEditor({
             </p>
           </div>
         </div>
+
+        {/* Row 1 — document actions */}
         <div className="flex items-center gap-2 flex-wrap">
           <button className="btn-soft text-xs" onClick={copy} disabled={!letter || streaming}>
             {copied ? "Copied!" : "Copy"}
@@ -186,29 +188,33 @@ export default function LetterEditor({
           <button className="btn-soft text-xs" onClick={exportPdf} disabled={!letter || streaming}>
             Download .pdf
           </button>
-          {letter && !streaming && (
+          <button className="btn-primary text-xs" onClick={onRegenerate} disabled={streaming || !canRegenerate}>
+            {streaming ? "Generating…" : letter ? "Regenerate" : "Generate"}
+          </button>
+        </div>
+
+        {/* Row 2 — analysis and bookkeeping */}
+        {letter && !streaming && (
+          <div className="flex items-center gap-2 flex-wrap mt-2">
             <button
-              className="btn-ghost text-xs"
+              className="btn-review text-xs"
               onClick={reviewLetter}
               disabled={reviewBusy}
               title="Score this letter against the job description"
             >
               {reviewBusy ? "Reviewing…" : review ? "Re-review" : "Review letter"}
             </button>
-          )}
-          {onTrack && letter && !streaming && (
-            <button
-              className="btn-ghost text-xs"
-              onClick={() => setTrackMsg(onTrack())}
-              title="Log this application in the job tracker"
-            >
-              {trackMsg || "Track application"}
-            </button>
-          )}
-          <button className="btn-primary text-xs" onClick={onRegenerate} disabled={streaming || !canRegenerate}>
-            {streaming ? "Generating…" : letter ? "Regenerate" : "Generate"}
-          </button>
-        </div>
+            {onTrack && (
+              <button
+                className="btn-track text-xs"
+                onClick={() => setTrackMsg(onTrack())}
+                title="Log this application in the job tracker"
+              >
+                {trackMsg || "Track application"}
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {error && (
