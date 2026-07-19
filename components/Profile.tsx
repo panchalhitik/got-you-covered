@@ -100,11 +100,18 @@ export default function Profile({
             value={value.instructions}
             onChange={(e) => update("instructions", e.target.value)}
           />
-          {!value.instructions.trim() && (
-            <p className="text-xs text-muted mt-2">
-              Empty — a built-in default prompt (standard one-page business letter, verbatim rule for personal details, sample-letter format takes precedence if attached) will be used.
-            </p>
-          )}
+          <p className="text-xs text-muted mt-2">
+            {value.instructions.trim() ? (
+              <>
+                <span className="text-emerald-400">Added on top of the built-in prompt.</span> Your
+                instructions win wherever they conflict; everything you don&apos;t mention still follows the
+                default layout, structure, and tone rules. A single line (e.g. an availability date) is
+                additive, not a replacement.
+              </>
+            ) : (
+              <>Empty — the built-in default prompt is used on its own (one-page letter, verbatim personal details, no invented facts).</>
+            )}
+          </p>
         </div>
         )}
 
