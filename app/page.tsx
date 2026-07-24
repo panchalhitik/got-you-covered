@@ -190,34 +190,25 @@ export default function Home() {
   return (
     <div className="space-y-6">
       <div className="flex justify-center">
-        <div className="inline-flex rounded-lg border border-border overflow-hidden">
-          <button
-            type="button"
-            onClick={() => switchTab("letter")}
-            className={`px-6 py-2.5 text-sm font-display uppercase tracking-wider transition-colors ${
-              tab === "letter" ? "bg-accent text-white" : "text-muted hover:text-white"
-            }`}
-          >
-            Cover letter
-          </button>
-          <button
-            type="button"
-            onClick={() => switchTab("cv")}
-            className={`px-6 py-2.5 text-sm font-display uppercase tracking-wider transition-colors ${
-              tab === "cv" ? "bg-accent text-white" : "text-muted hover:text-white"
-            }`}
-          >
-            CV optimizer
-          </button>
-          <button
-            type="button"
-            onClick={() => switchTab("tracker")}
-            className={`px-6 py-2.5 text-sm font-display uppercase tracking-wider transition-colors ${
-              tab === "tracker" ? "bg-accent text-white" : "text-muted hover:text-white"
-            }`}
-          >
-            Job tracker
-          </button>
+        <div className="inline-flex gap-1 p-1 rounded-xl border border-border bg-[#0d0d22]/70">
+          {([
+            ["letter", "Cover letter"],
+            ["cv", "CV optimizer"],
+            ["tracker", "Job tracker"],
+          ] as [Tab, string][]).map(([key, label]) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => switchTab(key)}
+              className={`px-4 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-medium tracking-wide transition-all ${
+                tab === key
+                  ? "bg-accent text-white shadow-glow"
+                  : "text-muted hover:text-white hover:bg-white/5"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
       </div>
 

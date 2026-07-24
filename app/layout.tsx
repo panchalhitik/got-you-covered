@@ -46,7 +46,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <div className="font-display text-base tracking-wider">
                   Got you <span className="cv-letter">C</span>o<span className="v-letter">V</span>ered
                 </div>
-                <div className="text-[10px] uppercase tracking-[0.2em] text-muted font-pixel">
+                <div className="text-[10px] uppercase tracking-[0.22em] text-muted font-medium mt-0.5">
                   Letters · CV · Tracker
                 </div>
               </div>
@@ -56,38 +56,34 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="divider-glow" />
         </header>
 
-        <section className="max-w-5xl mx-auto px-6 pt-12 pb-10 text-center">
-          <div className="flex justify-center mb-6">
-            <span className="chip">Write · Optimize · Track</span>
-          </div>
+        <section className="max-w-5xl mx-auto px-6 pt-10 pb-7 text-center">
           <div className="flex justify-center">
             <div className="relative">
               <div
                 aria-hidden
-                className="absolute inset-0 -z-10 blur-3xl opacity-60"
-                style={{ background: "radial-gradient(circle, rgba(168,85,247,0.55), transparent 70%)" }}
+                className="absolute inset-0 -z-10 blur-2xl opacity-50"
+                style={{ background: "radial-gradient(circle, rgba(168,85,247,0.5), transparent 70%)" }}
               />
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/logo.png"
                 alt="Got you CoVered"
-                width={180}
-                height={180}
+                width={96}
+                height={96}
                 className="object-contain"
-                style={{ width: 180, height: 180 }}
+                style={{ width: 96, height: 96 }}
               />
             </div>
           </div>
-          <h1 className="mt-6 font-display text-3xl sm:text-5xl font-extrabold tracking-tight">
+          <h1 className="mt-4 font-display text-3xl sm:text-4xl font-extrabold tracking-tight">
             <span className="gradient-text">Got you </span>
             <span className="cv-letter">C</span>
             <span className="gradient-text">o</span>
             <span className="v-letter">V</span>
             <span className="gradient-text">ered</span>
           </h1>
-          <p className="mt-4 text-muted max-w-xl mx-auto text-sm sm:text-base">
-            Your whole application workflow: generate tailored cover letters, score and optimize your CV against
-            the job description, and track every application — exported to <code className="text-white">.docx</code> / <code className="text-white">.pdf</code>, stored only in your browser.
+          <p className="mt-3 text-muted max-w-lg mx-auto text-sm">
+            Write tailored cover letters, optimize your CV against the job, and track every application.
           </p>
         </section>
 

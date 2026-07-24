@@ -235,13 +235,9 @@ export default function LetterEditor({
             onChange={(e) => setLetter(e.target.value)}
             placeholder="Your cover letter will stream in here..."
           />
-          <p className="text-xs text-muted mt-2">
-            <code>**text**</code> marks bold; a line of underscores becomes a horizontal rule in the .docx / .pdf. Copy strips them; downloads render them as real formatting.
-          </p>
-          <p className="text-xs text-amber-400/80 mt-1">
-            Both downloads embed a real text layer (selectable and ATS-readable). If you re-save the file, use
-            &quot;Save as PDF&quot; / &quot;Export to PDF&quot; — never &quot;Print to PDF&quot;, which turns the text into an image that
-            applicant tracking systems cannot read.
+          <p className="text-xs text-muted mt-2 leading-relaxed">
+            <code>**bold**</code> and underscore lines render as real formatting in downloads. Exports are
+            ATS-readable, so if you re-save, use &quot;Save as PDF&quot;, never &quot;Print to PDF&quot;.
           </p>
 
           {(review || reviewBusy || reviewErr) && (

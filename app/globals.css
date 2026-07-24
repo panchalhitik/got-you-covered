@@ -72,12 +72,12 @@ textarea, input, select { color-scheme: dark; }
 }
 
 .card {
-  @apply rounded-2xl p-6 transition-colors;
-  background: linear-gradient(180deg, rgba(23, 23, 50, 0.7), rgba(15, 15, 34, 0.85));
-  border: 1px solid rgba(39, 39, 74, 0.9);
+  @apply rounded-xl p-5 sm:p-6 transition-colors;
+  background: linear-gradient(180deg, rgba(20, 20, 44, 0.6), rgba(13, 13, 30, 0.8));
+  border: 1px solid rgba(39, 39, 74, 0.8);
   backdrop-filter: blur(8px);
 }
-.card:hover { border-color: rgba(168, 85, 247, 0.4); }
+.card:hover { border-color: rgba(168, 85, 247, 0.28); }
 
 .label {
   @apply block text-[10px] uppercase tracking-[0.2em] text-muted mb-2 font-medium;
@@ -89,18 +89,17 @@ textarea, input, select { color-scheme: dark; }
   @apply input min-h-[120px] font-mono leading-relaxed;
 }
 .tag {
-  @apply inline-flex items-center text-[10px] uppercase tracking-[0.18em] px-2.5 py-1 rounded font-pixel;
-  color: #f0b9ff;
-  background: rgba(168, 85, 247, 0.08);
-  border: 1px solid rgba(168, 85, 247, 0.4);
+  @apply inline-flex items-center text-[11px] font-semibold uppercase tracking-[0.12em] px-2.5 py-1 rounded-md;
+  color: #e2c4ff;
+  background: rgba(168, 85, 247, 0.1);
+  border: 1px solid rgba(168, 85, 247, 0.32);
 }
 
 .chip {
-  @apply inline-flex items-center text-[10px] uppercase tracking-[0.22em] px-3 py-1.5 rounded-full font-pixel;
-  color: #f0b9ff;
-  background: rgba(168, 85, 247, 0.08);
-  border: 1px solid rgba(168, 85, 247, 0.45);
-  box-shadow: 0 0 30px -10px rgba(168, 85, 247, 0.4);
+  @apply inline-flex items-center text-[11px] font-semibold uppercase tracking-[0.14em] px-3 py-1.5 rounded-full;
+  color: #e2c4ff;
+  background: rgba(168, 85, 247, 0.1);
+  border: 1px solid rgba(168, 85, 247, 0.32);
 }
 
 .gradient-text {
