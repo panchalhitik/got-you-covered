@@ -235,6 +235,16 @@ export default function JobInput({
           >
             {companyScraping ? "Fetching…" : "Fetch"}
           </button>
+          {value.companyContext && (
+            <button
+              type="button"
+              className="btn-ghost whitespace-nowrap"
+              onClick={() => onChange({ ...value, companyContext: "" })}
+              title="Remove the fetched company context"
+            >
+              Remove context
+            </button>
+          )}
         </div>
         {companyErr && <div className="text-xs text-amber-400 mt-2">{companyErr}</div>}
       </div>
@@ -242,8 +252,8 @@ export default function JobInput({
 
       {!hideExtras && value.companyContext && (
         <details className="mt-2">
-          <summary className="text-xs text-muted cursor-pointer">
-            Company context preview ({value.companyContext.length} chars)
+          <summary className="text-xs text-emerald-400/90 cursor-pointer">
+            ✓ Company context loaded ({value.companyContext.length} chars) — click to preview or edit
           </summary>
           <textarea
             className="textarea mt-2"

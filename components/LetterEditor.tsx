@@ -177,8 +177,8 @@ export default function LetterEditor({
           </div>
         </div>
 
-        {/* Row 1 — document actions */}
         <div className="flex items-center gap-2 flex-wrap">
+          {/* Document actions */}
           <button className="btn-soft text-xs" onClick={copy} disabled={!letter || streaming}>
             {copied ? "Copied!" : "Copy"}
           </button>
@@ -191,30 +191,30 @@ export default function LetterEditor({
           <button className="btn-primary text-xs" onClick={onRegenerate} disabled={streaming || !canRegenerate}>
             {streaming ? "Generating…" : letter ? "Regenerate" : "Generate"}
           </button>
-        </div>
 
-        {/* Row 2 — analysis and bookkeeping */}
-        {letter && !streaming && (
-          <div className="flex items-center gap-2 flex-wrap mt-2">
-            <button
-              className="btn-review text-xs"
-              onClick={reviewLetter}
-              disabled={reviewBusy}
-              title="Score this letter against the job description"
-            >
-              {reviewBusy ? "Reviewing…" : review ? "Re-review" : "Review letter"}
-            </button>
-            {onTrack && (
+          {/* Analysis and bookkeeping, pushed to the right edge */}
+          {letter && !streaming && (
+            <div className="flex items-center gap-2 flex-wrap ml-auto">
               <button
-                className="btn-track text-xs"
-                onClick={() => setTrackMsg(onTrack())}
-                title="Log this application in the job tracker"
+                className="btn-review text-xs"
+                onClick={reviewLetter}
+                disabled={reviewBusy}
+                title="Score this letter against the job description"
               >
-                {trackMsg || "Track application"}
+                {reviewBusy ? "Reviewing…" : review ? "Re-review" : "Review letter"}
               </button>
-            )}
-          </div>
-        )}
+              {onTrack && (
+                <button
+                  className="btn-track text-xs"
+                  onClick={() => setTrackMsg(onTrack())}
+                  title="Log this application in the job tracker"
+                >
+                  {trackMsg || "Track application"}
+                </button>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       {error && (
