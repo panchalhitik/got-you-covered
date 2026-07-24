@@ -37,6 +37,17 @@ function sameLocalDay(ts: number, ref: Date) {
   );
 }
 
+// Local calendar-day key, zero-padded so string sort == chronological order.
+function dayKey(d: Date) {
+  return (
+    d.getFullYear() +
+    "-" +
+    String(d.getMonth() + 1).padStart(2, "0") +
+    "-" +
+    String(d.getDate()).padStart(2, "0")
+  );
+}
+
 export default function JobTracker() {
   const [hydrated, setHydrated] = useState(false);
   const [jobs, setJobs] = useState<TrackedJob[]>([]);
@@ -89,6 +100,85 @@ export default function JobTracker() {
   const goal = Math.max(1, settings.dailyTarget || 1);
   const goalPct = Math.min(100, Math.round((stats.today / goal) * 100));
   const goalHit = stats.today >= goal;
+
+  const analytics = useMemo(() => {
+    // applications per calendar day
+    const counts = new Map<string, number>();
+    for (const j of jobs) {
+      const k = dayKey(new Date(j.createdAt));
+      counts.set(k, (counts.get(k) || 0) + 1);
+    }
+    const activeDays = counts.size;
+
+    // days where the (current) daily goal was reached
+    const metSet = new Set<string>();
+    for (const [k, c] of counts) if (c >= goal) metSet.add(k);
+    const daysGoalMet = metSet.size;
+
+    // current streak of goal-met days ending today (or yesterday, so it does
+    // not reset to zero before you have applied today)
+    let currentStreak = 0;
+    {
+      const cursor = new Date();
+      if (!metSet.has(dayKey(cursor))) cursor.setDate(cursor.getDate() - 1);
+      while (metSet.has(dayKey(cursor))) {
+        currentStreak++;
+        cursor.setDate(cursor.getDate() - 1);
+      }
+    }
+
+    // longest run of consecutive goal-met days ever
+    let bestStreak = 0;
+    {
+      const sorted = [...metSet].sort();
+      let run = 0;
+      let prev = "";
+      for (const k of sorted) {
+        if (prev) {
+          const [py, pm, pd] = prev.split("-").map(Number);
+          const expect = dayKey(new Date(py, pm - 1, pd + 1));
+          run = expect === k ? run + 1 : 1;
+        } else run = 1;
+        bestStreak = Math.max(bestStreak, run);
+        prev = k;
+      }
+    }
+
+    const total = jobs.length;
+    const interview = jobs.filter((j) => j.status === "interview").length;
+    const offer = jobs.filter((j) => j.status === "offer").length;
+    const responseRate = total ? Math.round(((interview + offer) / total) * 100) : 0;
+    const offerRate = total ? Math.round((offer / total) * 100) : 0;
+
+    const weekAgo = Date.now() - 7 * 86400000;
+    const last7 = jobs.filter((j) => j.createdAt >= weekAgo).length;
+    const avgPerActiveDay = activeDays ? total / activeDays : 0;
+
+    // last 14 calendar days as a mini bar series
+    const days: { key: string; label: string; count: number; met: boolean }[] = [];
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const k = dayKey(d);
+      const c = counts.get(k) || 0;
+      days.push({ key: k, label: String(d.getDate()), count: c, met: c >= goal });
+    }
+    const scaleMax = Math.max(goal, ...days.map((d) => d.count), 1);
+
+    return {
+      activeDays,
+      daysGoalMet,
+      currentStreak,
+      bestStreak,
+      responseRate,
+      offerRate,
+      last7,
+      avgPerActiveDay,
+      days,
+      scaleMax,
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [jobs, goal]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -204,6 +294,115 @@ export default function JobTracker() {
           <div className="text-2xl font-display font-bold mt-1 text-red-300">{stats.rejectionPct}%</div>
         </div>
       </div>
+
+      {/* ---- Analytics ---- */}
+      {stats.total > 0 && (
+        <details open className="border border-border rounded-xl bg-[#0a0a1c]/50 mb-4 group">
+          <summary className="flex items-center justify-between gap-3 px-4 py-3 cursor-pointer select-none list-none">
+            <h3 className="text-sm font-semibold">Analytics</h3>
+            <span className="text-xs text-muted group-open:hidden">Show</span>
+            <span className="text-xs text-muted hidden group-open:inline">Hide</span>
+          </summary>
+
+          <div className="px-4 pb-4">
+            {/* metric tiles */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-4">
+              <div className="rounded-lg border border-border bg-[#0a0a1c]/60 p-3">
+                <div className="text-[10px] uppercase tracking-widest text-muted">Days goal met</div>
+                <div className="text-xl font-display font-bold mt-1 text-emerald-300">
+                  {analytics.daysGoalMet}
+                </div>
+                <div className="text-[10px] text-muted mt-0.5">of {analytics.activeDays} active</div>
+              </div>
+              <div className="rounded-lg border border-border bg-[#0a0a1c]/60 p-3">
+                <div className="text-[10px] uppercase tracking-widest text-muted">Current streak</div>
+                <div className="text-xl font-display font-bold mt-1">
+                  {analytics.currentStreak}
+                  <span className="text-xs text-muted font-sans font-normal"> {analytics.currentStreak === 1 ? "day" : "days"}</span>
+                </div>
+                <div className="text-[10px] text-muted mt-0.5">goal-met in a row</div>
+              </div>
+              <div className="rounded-lg border border-border bg-[#0a0a1c]/60 p-3">
+                <div className="text-[10px] uppercase tracking-widest text-muted">Best streak</div>
+                <div className="text-xl font-display font-bold mt-1">
+                  {analytics.bestStreak}
+                  <span className="text-xs text-muted font-sans font-normal"> {analytics.bestStreak === 1 ? "day" : "days"}</span>
+                </div>
+                <div className="text-[10px] text-muted mt-0.5">personal record</div>
+              </div>
+              <div className="rounded-lg border border-border bg-[#0a0a1c]/60 p-3">
+                <div className="text-[10px] uppercase tracking-widest text-muted">Response rate</div>
+                <div className="text-xl font-display font-bold mt-1 text-amber-300">
+                  {analytics.responseRate}%
+                </div>
+                <div className="text-[10px] text-muted mt-0.5">interview + offer</div>
+              </div>
+              <div className="rounded-lg border border-border bg-[#0a0a1c]/60 p-3">
+                <div className="text-[10px] uppercase tracking-widest text-muted">Offer rate</div>
+                <div className="text-xl font-display font-bold mt-1 text-emerald-300">
+                  {analytics.offerRate}%
+                </div>
+                <div className="text-[10px] text-muted mt-0.5">of all applications</div>
+              </div>
+              <div className="rounded-lg border border-border bg-[#0a0a1c]/60 p-3">
+                <div className="text-[10px] uppercase tracking-widest text-muted">Last 7 days</div>
+                <div className="text-xl font-display font-bold mt-1">{analytics.last7}</div>
+                <div className="text-[10px] text-muted mt-0.5">
+                  {analytics.avgPerActiveDay.toFixed(1)} / active day
+                </div>
+              </div>
+            </div>
+
+            {/* 14-day activity chart */}
+            <div className="rounded-lg border border-border bg-[#0a0a1c]/60 p-4">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-xs font-medium">Last 14 days</span>
+                <span className="text-[10px] text-muted flex items-center gap-3">
+                  <span className="flex items-center gap-1">
+                    <span className="inline-block w-2 h-2 rounded-sm bg-emerald-400" /> goal met
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <span className="inline-block w-4 border-t border-dashed border-accent/70" /> goal ({goal})
+                  </span>
+                </span>
+              </div>
+              <div className="relative h-24 flex items-end gap-1">
+                {/* goal threshold line */}
+                <div
+                  className="absolute left-0 right-0 border-t border-dashed border-accent/50 pointer-events-none"
+                  style={{ bottom: `${(goal / analytics.scaleMax) * 100}%` }}
+                />
+                {analytics.days.map((d) => (
+                  <div
+                    key={d.key}
+                    className="flex-1 rounded-t-sm transition-all relative group/bar min-h-[2px]"
+                    style={{
+                      height: `${Math.max((d.count / analytics.scaleMax) * 100, d.count > 0 ? 4 : 1)}%`,
+                      background: d.met
+                        ? "linear-gradient(180deg,#34d399,#059669)"
+                        : d.count > 0
+                          ? "linear-gradient(180deg,#a855f7,#7c3aed)"
+                          : "rgba(255,255,255,0.05)",
+                    }}
+                    title={`${d.key}: ${d.count} application${d.count === 1 ? "" : "s"}`}
+                  />
+                ))}
+              </div>
+              <div className="flex gap-1 mt-1">
+                {analytics.days.map((d) => (
+                  <div key={d.key} className="flex-1 text-center text-[9px] text-muted/70">
+                    {d.label}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <p className="text-[10px] text-muted mt-2">
+              Streaks and days-goal-met use your current daily goal ({goal}). Change the goal above to recalculate.
+            </p>
+          </div>
+        </details>
+      )}
 
       {/* ---- Add form ---- */}
       <div className="border border-border rounded-xl p-4 mb-4 bg-[#0a0a1c]/50">
