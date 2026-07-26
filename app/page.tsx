@@ -231,6 +231,7 @@ export default function Home() {
       {tab === "cv" && (
         <CvTools
           resume={profile.resume}
+          resumeFileName={profile.resumeFileName}
           resumeDocxBase64={profile.resumeDocxBase64}
           jobText={job.jobText}
           company={job.company}

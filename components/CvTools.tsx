@@ -7,6 +7,7 @@ import { downloadPdf } from "@/lib/pdf";
 
 type Props = {
   resume: string;
+  resumeFileName: string;
   resumeDocxBase64: string;
   jobText: string;
   company: string;
@@ -16,6 +17,17 @@ type Props = {
 
 type RateSource = "uploaded" | "optimized";
 
+function truncateName(s: string, max = 28) {
+  return s.length > max ? s.slice(0, max - 1) + "…" : s;
+}
+
+// Cheap stable fingerprint (djb2) of the exact text a rating scored.
+function textHash(s: string): string {
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
+  return String(h);
+}
+
 function scoreBand(score: number) {
   if (score >= 80) return { label: "Interview-likely", color: "#34d399" };
   if (score >= 60) return { label: "Borderline", color: "#fbbf24" };
@@ -24,14 +36,18 @@ function scoreBand(score: number) {
 
 export default function CvTools({
   resume,
+  resumeFileName,
   resumeDocxBase64,
   jobText,
   company,
   role,
   onUseInLetter,
 }: Props) {
+  const uploadedLabel = resumeFileName ? truncateName(resumeFileName) : "uploaded CV";
   const [hydrated, setHydrated] = useState(false);
   const [rating, setRating] = useState("");
+  const [ratingSource, setRatingSource] = useState<RateSource | "">("");
+  const [ratingHash, setRatingHash] = useState("");
   const [optimized, setOptimized] = useState("");
   const [optimizedDocx, setOptimizedDocx] = useState(""); // base64, in-memory only
   const [rateSource, setRateSource] = useState<RateSource>("uploaded");
@@ -45,6 +61,8 @@ export default function CvTools({
   useEffect(() => {
     const data = cvStore.load();
     setRating(data.rating);
+    setRatingSource(data.ratingSource || "");
+    setRatingHash(data.ratingHash || "");
     setOptimized(data.optimized);
     if (data.optimized) setRateSource("optimized");
     setHydrated(true);
@@ -52,8 +70,8 @@ export default function CvTools({
 
   useEffect(() => {
     if (!hydrated) return;
-    cvStore.save({ optimized, rating });
-  }, [optimized, rating, hydrated]);
+    cvStore.save({ optimized, rating, ratingSource, ratingHash });
+  }, [optimized, rating, ratingSource, ratingHash, hydrated]);
 
   useEffect(() => {
     if (!copied) return;
@@ -83,6 +101,7 @@ export default function CvTools({
     () => rating.replace(/^\s*SCORE:.*$/im, "").trim(),
     [rating],
   );
+
 
   const baseName = useMemo(() => {
     const parts = [company, role].filter(Boolean).map((s) =>
@@ -130,9 +149,14 @@ export default function CvTools({
     const source = which === "optimized" && optimized.trim() ? plainOptimized : resume;
     setError(null);
     setRating("");
+    setRatingSource("");
+    setRatingHash("");
     setRateBusy(true);
     try {
       await streamInto("/api/cv/rate", source, setRating);
+      // Remember exactly what this report scored, so the UI can flag staleness.
+      setRatingSource(which);
+      setRatingHash(textHash(source));
     } catch (e: unknown) {
       if ((e as { name?: string })?.name === "AbortError") return;
       setError(e instanceof Error ? e.message : "Rating failed");
@@ -264,8 +288,9 @@ export default function CvTools({
                 className="input !w-auto text-xs"
                 value={rateSource}
                 onChange={(e) => setRateSource(e.target.value as RateSource)}
+                title={resumeFileName || undefined}
               >
-                <option value="uploaded">Rate: uploaded CV</option>
+                <option value="uploaded">Rate: {uploadedLabel}</option>
                 <option value="optimized">Rate: optimized CV</option>
               </select>
             )}

@@ -25,6 +25,10 @@ export type JobData = {
 export type CvData = {
   optimized: string;
   rating: string;
+  // Provenance of the stored rating: which source it scored and a hash of the
+  // exact text that was rated, so the UI can flag stale reports.
+  ratingSource: "uploaded" | "optimized" | "";
+  ratingHash: string;
 };
 
 export type JobStatus = "applied" | "interview" | "offer" | "rejected";
@@ -160,7 +164,8 @@ export const letterReviewStore = {
 };
 
 export const cvStore = {
-  load: () => safeLoad<CvData>(CV_KEY, { optimized: "", rating: "" }),
+  load: () =>
+    safeLoad<CvData>(CV_KEY, { optimized: "", rating: "", ratingSource: "", ratingHash: "" }),
   save: (v: CvData) => safeSave(CV_KEY, v),
 };
 
