@@ -27,7 +27,10 @@ RED FLAGS
 TOP FIXES
 - <max 3 bullets, imperative, each max 15 words, highest impact first>
 
-Hard limit: 150 words total. Cut the weakest points to fit, never the format.`;
+TOP 4 PROJECTS (IF more than 4, pick the most relevant in order of JD match)
+- <max 4 bullets, each max 15 words, quoting CV content that best demonstrates relevant skills>
+
+Hard limit: 200 words total. Cut the weakest points to fit, never the format.`;
 
 export async function POST(req: NextRequest) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
